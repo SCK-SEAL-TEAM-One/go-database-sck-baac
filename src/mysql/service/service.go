@@ -22,19 +22,21 @@ func dbConnection() (db *sql.DB) {
 }
 
 func CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
-	var description string
 	db := dbConnection()
 	defer db.Close()
 
 	if r.Method == http.MethodPost {
-		description = r.FormValue("description")
+		description := r.FormValue("description")
 		insertForm, err := db.Prepare("INSERT INTO sayhi(description) VALUES(?)")
 		if err != nil {
 			panic(err.Error())
 		}
 		insertForm.Exec(description)
+		w.Write([]byte("Created " + description + " success\n"))
+		return
 	}
-	w.Write([]byte("Create " + description + " success\n"))
+	w.Write([]byte("fail"))
+
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
@@ -52,4 +54,22 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write([]byte("fail"))
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	db := dbConnection()
+	defer db.Close()
+	if r.Method == http.MethodPost {
+		description := r.FormValue("description")
+		id := r.FormValue("id")
+		insertForm, err := db.Prepare("UPDATE sayhi SET description=? WHERE id=?")
+		if err != nil {
+			panic(err.Error())
+		}
+		insertForm.Exec(description, id)
+		w.Write([]byte("Updated description :" + description + " id :" + id + " success\n"))
+		return
+	}
+	w.Write([]byte("fail"))
+
 }
