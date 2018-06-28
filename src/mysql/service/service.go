@@ -22,14 +22,19 @@ func dbConnection() (db *sql.DB) {
 }
 
 func CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
-	db := dbConnection()
+    var description string
+    db := dbConnection()
+    
 	if r.Method == "POST" {
-		description := r.FormValue("description")
+		description = r.FormValue("description")
 		insertForm, err := db.Prepare("INSERT INTO sayhi(description) VALUES(?)")
 		if err != nil {
 			panic(err.Error())
 		}
 		insertForm.Exec(description)
 	}
-	defer db.Close()
+    defer db.Close()
+    w.Write([]byte("Create " + description + " success\n"))
 }
+
+
