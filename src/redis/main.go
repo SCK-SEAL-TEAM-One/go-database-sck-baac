@@ -43,7 +43,24 @@ func main() {
 			http.Error(responseWriter, err.Error(), 500)
 
 		}
+		responseWriter.Write([]byte("Create Successful"))
+	})
 
+	http.HandleFunc("/redis/delete", func(responseWriter http.ResponseWriter, request *http.Request) {
+		decoder := json.NewDecoder(request.Body)
+		var postData map[string]string
+		err := decoder.Decode(&postData)
+
+		if err != nil {
+			http.Error(responseWriter, err.Error(), 500)
+
+		}
+		val, err := rc.DeleteKey(postData["key"])
+		if err != nil {
+			http.Error(responseWriter, err.Error(), 500)
+
+		}
+		responseWriter.Write([]byte("Delete Successful" + string(val)))
 	})
 
 	http.ListenAndServe(":3000", nil)
