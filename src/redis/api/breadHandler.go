@@ -12,6 +12,7 @@ func GetRead(ReadKeyFunc func(string) (string, error)) func(http.ResponseWriter,
 		val, err := ReadKeyFunc(key)
 		if err != nil {
 			http.Error(responseWriter, err.Error(), 500)
+			return
 
 		}
 		responseWriter.Write([]byte(val))
@@ -27,12 +28,12 @@ func GetCreate(WriteKeyFunc func(string, interface{}) error) func(http.ResponseW
 
 		if err != nil {
 			http.Error(responseWriter, err.Error(), 500)
-
+			return
 		}
 		err = WriteKeyFunc(postData["key"], postData["value"])
 		if err != nil {
 			http.Error(responseWriter, err.Error(), 500)
-
+			return
 		}
 		responseWriter.Write([]byte("Create Successful"))
 	}
@@ -46,13 +47,15 @@ func GetDelete(DeleteKeyFunc func(string) (int64, error)) func(http.ResponseWrit
 
 		if err != nil {
 			http.Error(responseWriter, err.Error(), 500)
+			return
 
 		}
-		val, err := DeleteKeyFunc(postData["key"])
+		_, err = DeleteKeyFunc(postData["key"])
 		if err != nil {
 			http.Error(responseWriter, err.Error(), 500)
+			return
 
 		}
-		responseWriter.Write([]byte("Delete Successful" + string(val)))
+		responseWriter.Write([]byte("Delete Successful"))
 	}
 }
