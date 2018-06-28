@@ -1,4 +1,4 @@
-package service
+package handler
 
 import (
 	"database/sql"
@@ -7,22 +7,24 @@ import (
 	"net/http"
 )
 
-func dbConnection() (db *sql.DB) {
-	// Hard Code Database Config
-	dbDriver := "mysql"
-	dbUser := "root"
-	dbPass := "sckshuhari"
-	dbName := "sckseal"
-	sqlCommand := fmt.Sprintf("%s:%s@/%s", dbUser, dbPass, dbName)
-	db, err := sql.Open(dbDriver, sqlCommand)
+type Api struct {
+	DBDriver   string
+	DBUsername string
+	DBPassword string
+	DBName     string
+}
+
+func (a Api) dbConnection() (db *sql.DB) {
+	sqlCommand := fmt.Sprintf("%s:%s@/%s", a.DBUsername, a.DBPassword, a.DBName)
+	db, err := sql.Open(a.DBDriver, sqlCommand)
 	if err != nil {
 		panic(err.Error())
 	}
 	return db
 }
 
-func CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
-	db := dbConnection()
+func (a Api) CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
+	db := a.dbConnection()
 	defer db.Close()
 
 	if r.Method == http.MethodPost {
@@ -39,8 +41,8 @@ func CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Delete(w http.ResponseWriter, r *http.Request) {
-	db := dbConnection()
+func (a Api) Delete(w http.ResponseWriter, r *http.Request) {
+	db := a.dbConnection()
 	defer db.Close()
 
 	if r.Method == http.MethodPost {
@@ -56,8 +58,8 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("fail"))
 }
 
-func Update(w http.ResponseWriter, r *http.Request) {
-	db := dbConnection()
+func (a Api) Update(w http.ResponseWriter, r *http.Request) {
+	db := a.dbConnection()
 	defer db.Close()
 	if r.Method == http.MethodPost {
 		description := r.FormValue("description")
@@ -73,8 +75,9 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("fail"))
 
 }
-func ReadById(w http.ResponseWriter, r *http.Request) {
-	db := dbConnection()
+
+func (a Api) ReadById(w http.ResponseWriter, r *http.Request) {
+	db := a.dbConnection()
 	defer db.Close()
 	if r.Method == http.MethodPost {
 		id := r.FormValue("id")
@@ -88,7 +91,27 @@ func ReadById(w http.ResponseWriter, r *http.Request) {
 			var description string
 			rows.Scan(&description)
 			w.Write([]byte(description))
+		}
+		return
+	}
+	w.Write([]byte("fail"))
+}
 
+func (a Api) Read(w http.ResponseWriter, r *http.Request) {
+	db := a.dbConnection()
+	defer db.Close()
+	if r.Method == http.MethodGet {
+		deleteForm, err := db.Prepare("SELECT id, description FROM sayhi")
+		if err != nil {
+			panic(err.Error())
+		}
+		rows, _ := deleteForm.Query()
+		defer rows.Close()
+		for rows.Next() {
+			var id string
+			var description string
+			rows.Scan(&id, &description)
+			w.Write([]byte(id + ":" + description + "\n"))
 		}
 		return
 	}

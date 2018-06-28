@@ -1,17 +1,18 @@
 package crud
 
 import (
+	"couchdb/model"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
-func ReadCouchDB(id int, couchdbIP string) {
-	url := couchdbIP + "/sckseal/_find"
-
-	payload := strings.NewReader("{\"selector\": {\"id\": " + strconv.Itoa(id) + "}}")
+func ReadCouchDB(id string, couchdbURL string) model.Docs {
+	url := couchdbURL + "/sckseal/_find"
+	couchDBResponse := model.Docs{}
+	payload := strings.NewReader("{\"selector\": {\"id\": " + id + "},\"fields\":[\"id\",\"sayhi\"]}")
 
 	req, _ := http.NewRequest("POST", url, payload)
 
@@ -21,8 +22,12 @@ func ReadCouchDB(id int, couchdbIP string) {
 
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
-
 	fmt.Println(res)
 	fmt.Println(string(body))
-	//return nil
+
+	err := json.Unmarshal(body, &couchDBResponse)
+	if err != nil {
+		fmt.Println("error : ", err)
+	}
+	return couchDBResponse
 }
