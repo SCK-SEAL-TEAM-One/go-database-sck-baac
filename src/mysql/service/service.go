@@ -43,7 +43,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	db := dbConnection()
 	defer db.Close()
 
-	if r.Method == http.MethodDelete {
+	if r.Method == http.MethodPost {
 		id := r.FormValue("id")
 		deleteForm, err := db.Prepare("DELETE FROM sayhi WHERE id=?")
 		if err != nil {
@@ -72,4 +72,25 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write([]byte("fail"))
 
+}
+func ReadById(w http.ResponseWriter, r *http.Request) {
+	db := dbConnection()
+	defer db.Close()
+	if r.Method == http.MethodPost {
+		id := r.FormValue("id")
+		deleteForm, err := db.Prepare("SELECT description FROM sayhi WHERE id=?")
+		if err != nil {
+			panic(err.Error())
+		}
+		rows, _ := deleteForm.Query(id)
+		defer rows.Close()
+		for rows.Next() {
+			var description string
+			rows.Scan(&description)
+			w.Write([]byte(description))
+
+		}
+		return
+	}
+	w.Write([]byte("fail"))
 }
