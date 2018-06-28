@@ -7,49 +7,23 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-func Connect() *bolt.DB {
-	// Open the database.
-	db, err := bolt.Open("test.db", 0777, nil)
-	// defer os.Remove(db.Path())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Close database to release the file lock.
-	if err := db.Close(); err != nil {
-		log.Fatal(err)
-	}
-
-	return db
-}
-
-func Insert_DB() {
-	db := Connect()
-	// Insert data into a bucket.
+func Insert_DB(db *bolt.DB) {
+	// Execute several commands within a read-write transaction.
 	if err := db.Update(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucket([]byte("people"))
-		if err != nil {
-			return err
-		}
-		if err := b.Put([]byte("john"), []byte("doe")); err != nil {
-			return err
-		}
-		if err := b.Put([]byte("john"), []byte("que")); err != nil {
-			return err
-		}
+		b, _ := tx.CreateBucketIfNotExists([]byte("widgets"))
+		b.Put([]byte("Name"), []byte("Lek"))
+		b.Put([]byte("Age"), []byte("22"))
 		return nil
 	}); err != nil {
 		log.Fatal(err)
 	}
-
 }
 
-func View_DB() {
-	db := Connect()
-	// Access data from within a read-only transactional block.
+func View_DB(db *bolt.DB) {
+	// Read the value back from a separate read-only transaction.
 	if err := db.View(func(tx *bolt.Tx) error {
-		v := tx.Bucket([]byte("people")).Get([]byte("john"))
-		fmt.Printf("John's last name is %s.\n", v)
+		value := tx.Bucket([]byte("widgets")).Get([]byte("foo"))
+		fmt.Printf("The value of 'foo' is: %s\n", value)
 		return nil
 	}); err != nil {
 		log.Fatal(err)
