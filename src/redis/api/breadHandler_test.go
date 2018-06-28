@@ -51,3 +51,27 @@ func Test_GetCreate_With_Stub_Input_Key_Applepie_Value_USA_Should_Be_Create_Succ
 	}
 
 }
+
+func Test_GetDelete_With_Stub_Input_Key_Applepie_Should_Be_Delete_Successful(t *testing.T) {
+	stubDeleteKeyFunc := func(string) (int64, error) {
+		return 1, nil
+	}
+	read := GetDelete(stubDeleteKeyFunc)
+	url := "/redis/delete"
+	requestBody := map[string]string{
+		"key": "Applepie",
+	}
+	requestBodyString, _ := json.Marshal(requestBody)
+	request := httptest.NewRequest("DELETE", url, bytes.NewBuffer(requestBodyString))
+	responseRecorder := httptest.NewRecorder()
+	expected := `Delete Successful`
+
+	read(responseRecorder, request)
+	response := responseRecorder.Result()
+	actual, _ := ioutil.ReadAll(response.Body)
+
+	if string(actual) != expected {
+		t.Errorf("Should Be %s but it got %s", expected, string(actual))
+	}
+
+}

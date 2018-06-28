@@ -48,11 +48,11 @@ func GetDelete(DeleteKeyFunc func(string) (int64, error)) func(http.ResponseWrit
 			http.Error(responseWriter, err.Error(), 500)
 
 		}
-		val, err := DeleteKeyFunc(postData["key"])
+		_, err = DeleteKeyFunc(postData["key"])
 		if err != nil {
 			http.Error(responseWriter, err.Error(), 500)
 
 		}
-		responseWriter.Write([]byte("Delete Successful" + string(val)))
+		responseWriter.Write([]byte("Delete Successful"))
 	}
 }
