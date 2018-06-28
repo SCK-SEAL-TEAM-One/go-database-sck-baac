@@ -73,6 +73,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("fail"))
 
 }
+
 func ReadById(w http.ResponseWriter, r *http.Request) {
 	db := dbConnection()
 	defer db.Close()
@@ -88,7 +89,27 @@ func ReadById(w http.ResponseWriter, r *http.Request) {
 			var description string
 			rows.Scan(&description)
 			w.Write([]byte(description))
+		}
+		return
+	}
+	w.Write([]byte("fail"))
+}
 
+func Read(w http.ResponseWriter, r *http.Request) {
+	db := dbConnection()
+	defer db.Close()
+	if r.Method == http.MethodGet {
+		deleteForm, err := db.Prepare("SELECT id, description FROM sayhi")
+		if err != nil {
+			panic(err.Error())
+		}
+		rows, _ := deleteForm.Query()
+		defer rows.Close()
+		for rows.Next() {
+            var id string
+			var description string
+			rows.Scan(&id,&description)
+			w.Write([]byte(id + ":" +description + "\n"))
 		}
 		return
 	}
