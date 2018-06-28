@@ -1,13 +1,13 @@
 package main
 
 import (
-	"couchdb/crud"
-)
-
-const (
-	url = "http://127.0.0.1:5984"
+	"couchdb/api"
+	"fmt"
+	"net/http"
 )
 
 func main() {
-	crud.ReadCouchDB(2, url)
+	http.HandleFunc("/read", api.ReadHandler)
+	fmt.Println("Listening on port 9092")
+	http.ListenAndServe(":9092", nil)
 }
