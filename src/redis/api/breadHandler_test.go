@@ -27,11 +27,11 @@ func Test_GetRead_With_Stub_Input_Key_Melonbread_Should_Be_Japan(t *testing.T) {
 	}
 
 }
-func Test_GetCreate_With_Stub_Input_Key_Applepie_Value_USA_Should_Be_Create_Successful(t *testing.T) {
+func Test_GetBreadCreate_With_Stub_Input_Key_Applepie_Value_USA_Should_Be_Create_Successful(t *testing.T) {
 	stubWriteKeyFunc := func(string, interface{}) error {
 		return nil
 	}
-	read := GetCreate(stubWriteKeyFunc)
+	read := GetBreadCreate(stubWriteKeyFunc)
 	url := "/redis/create"
 	requestBody := map[string]string{
 		"key":   "Applepie",

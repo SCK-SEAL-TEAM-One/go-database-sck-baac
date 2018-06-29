@@ -4,30 +4,50 @@ import (
 	"encoding/json"
 	"fmt"
 	"leveldb/model"
-	"log"
 
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-func ConnectLevelDB() *leveldb.DB {
-	db, err := leveldb.OpenFile("/Users/captainamerica/Documents/ldb/sckseal", nil)
-	if err != nil {
-		log.Fatal("connect error!")
-	}
+func ReadSayhiAll(db *leveldb.DB) []model.Sayhi {
 
-	return db
+	defer db.Close()
+	// data, _ := db.Get([]byte("sayhi"), nil)
+	// fmt.Println(string(data))
+
+	// return string(data)
+
+	//listSayhi := make([]model.Sayhi, 0)
+	data, _ := db.Get([]byte("sayhi"), nil)
+
+	//aa := string(data)
+	var sayhi []model.Sayhi
+	json.Unmarshal([]byte(string(data)), &sayhi)
+
+	//json.Unmarshal(data, &listSayhi)
+
+	// iter := db.NewIterator(nil, nil)
+	// for iter.Next() {
+	// 	key := iter.Key()
+	// 	value := iter.Value()
+	// 	fmt.Printf("key: %s | value: %s\n", key, value)
+	// 	sayhi := model.Sayhi{Id: string(key), Description: string(value)}
+	// 	fmt.Println(sayhi)
+	// 	listSayhi.List = append(listSayhi.List, sayhi)
+
+	// }
+	//sayhiData := model.ListSayhi{List: listSayhi}
+	fmt.Println(sayhi)
+	return sayhi
 }
 
-func ReadSayhi() model.Sayhi {
+func ReadSayhi(db *leveldb.DB) model.Sayhi {
 
-	db := ConnectLevelDB()
 	defer db.Close()
-	data, _ := db.Get([]byte("sayhi"), nil)
+	data, _ := db.Get([]byte("sayhi2"), nil)
 
 	var sayhi model.Sayhi
 	json.Unmarshal([]byte(string(data)), &sayhi)
 	fmt.Printf(" Description: %s\n", sayhi.Description)
 
 	return sayhi
-
 }

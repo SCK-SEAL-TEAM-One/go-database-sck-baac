@@ -2,15 +2,21 @@ package main
 
 import (
 	"log"
-	"mysql/service"
+	"mysql/handler"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/create", service.CreateMessageHandler)
-	http.HandleFunc("/delete", service.Delete)
-	http.HandleFunc("/update", service.Update)
-	http.HandleFunc("/readbyid", service.ReadById)
+	api := handler.Api{
+		DBDriver:   "mysql",
+		DBUsername: "root",
+		DBPassword: "sckshuhari",
+		DBName:     "sckseal",
+	}
+	http.HandleFunc("/helloworld/add", api.CreateMessageHandler)
+	http.HandleFunc("/helloworld/delete", api.Delete)
+	http.HandleFunc("/helloworld/edit", api.Update)
+	http.HandleFunc("/helloworld/readById", api.ReadById)
 
 	log.Println("Listening...")
 	http.ListenAndServe(":3000", nil)

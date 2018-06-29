@@ -1,12 +1,20 @@
 package main
 
 import (
-	"api"
+	"leveldb/api"
+	"log"
 	"net/http"
+
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
 func main() {
-	//crud.ConnectLevelDB("/Users/captainamerica/Documents/ldb/sckseal")
-	http.HandleFunc("/read", api.Read)
+
+	db, err := leveldb.OpenFile("/Users/captainamerica/Documents/ldb/sckseal", nil)
+	if err != nil {
+		log.Fatal("connect error!")
+	}
+	http.HandleFunc("/helloworld/readAll", api.ReadAll(db))
+	http.HandleFunc("/helloworld/read", api.Read(db))
 	http.ListenAndServe(":8080", nil)
 }
