@@ -40,14 +40,30 @@ func ReadSayhiAll(db *leveldb.DB) []model.Sayhi {
 	return sayhi
 }
 
-func ReadSayhi(db *leveldb.DB) model.Sayhi {
+func ReadSayhi(db *leveldb.DB) model.ListSayhi {
 
 	defer db.Close()
-	data, _ := db.Get([]byte("sayhi2"), nil)
+	data, _ := db.Get([]byte("sayhi"), nil)
+	fmt.Println("data : ", string(data))
+	levelDBResponse := model.ListSayhi{}
 
-	var sayhi model.Sayhi
-	json.Unmarshal([]byte(string(data)), &sayhi)
-	fmt.Printf(" Description: %s\n", sayhi.Description)
+	err := json.Unmarshal(data, &levelDBResponse)
 
-	return sayhi
+	if err != nil {
+		fmt.Println("error : ", err)
+	}
+
+	return levelDBResponse
 }
+
+// func ReadSayhi(db *leveldb.DB) []model.Sayhi {
+
+// 	defer db.Close()
+// 	data, _ := db.Get([]byte("sayhi"), nil)
+
+// 	var sayhi []model.Sayhi
+// 	json.Unmarshal([]byte(string(data)), &sayhi)
+// 	fmt.Printf(" Description: %s\n", sayhi[0].Description)
+
+// 	return sayhi
+// }
