@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"leveldb/crud"
+	"leveldb/model"
 	"net/http"
 
 	"github.com/syndtr/goleveldb/leveldb"
@@ -12,9 +13,18 @@ import (
 // 	DB *leveldb.DB
 // }
 
-func Read(db *leveldb.DB) http.HandlerFunc {
+// func ReadAll(db *leveldb.DB) http.HandlerFunc {
 
-	sayhi := crud.ReadSayhi(db)
+// 	sayhi := crud.ReadSayhiAll(db)
+
+// 	return func(responseWriter http.ResponseWriter, request *http.Request) {
+// 		JSONConnectData, _ := json.Marshal(sayhi)
+// 		responseWriter.Write(JSONConnectData)
+// 	}
+// }
+
+func Read(db *leveldb.DB) http.HandlerFunc {
+	var sayhi model.ListSayhi = crud.ReadSayhi(db)
 
 	return func(responseWriter http.ResponseWriter, request *http.Request) {
 		JSONConnectData, _ := json.Marshal(sayhi)

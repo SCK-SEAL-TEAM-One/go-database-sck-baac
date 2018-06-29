@@ -18,9 +18,11 @@ func main() {
 	rc := crud.RedisClient{Client: client}
 	http.HandleFunc("/helloworld/readAll", api.GetReadAll(rc.ReadAllKey))
 	http.HandleFunc("/helloworld/readById", api.GetReadById(rc.ReadById))
+	http.HandleFunc("/helloworld/add", api.GetCreate(rc.Add))
+	http.HandleFunc("/helloworld/edit", api.GetEdit(rc.Edit))
 	http.HandleFunc("/redis/read", api.GetRead(rc.ReadKey))
 
-	http.HandleFunc("/redis/create", api.GetCreate(rc.WriteKey))
+	http.HandleFunc("/redis/create", api.GetBreadCreate(rc.WriteKey))
 
 	http.HandleFunc("/redis/delete", api.GetDelete(rc.DeleteKey))
 

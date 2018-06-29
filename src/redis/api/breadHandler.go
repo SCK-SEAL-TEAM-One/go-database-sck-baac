@@ -20,7 +20,7 @@ func GetRead(ReadKeyFunc func(string) (string, error)) func(http.ResponseWriter,
 	}
 }
 
-func GetCreate(WriteKeyFunc func(string, interface{}) error) func(http.ResponseWriter, *http.Request) {
+func GetBreadCreate(WriteKeyFunc func(string, interface{}) error) func(http.ResponseWriter, *http.Request) {
 	return func(responseWriter http.ResponseWriter, request *http.Request) {
 		decoder := json.NewDecoder(request.Body)
 		var postData map[string]string

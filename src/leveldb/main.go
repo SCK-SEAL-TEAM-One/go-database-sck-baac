@@ -14,7 +14,7 @@ func main() {
 	if err != nil {
 		log.Fatal("connect error!")
 	}
-
-	http.HandleFunc("/read", api.Read(db))
+	//http.HandleFunc("/helloworld/readAll", api.ReadAll(db))
+	http.HandleFunc("/helloworld/read", api.Read(db))
 	http.ListenAndServe(":8080", nil)
 }

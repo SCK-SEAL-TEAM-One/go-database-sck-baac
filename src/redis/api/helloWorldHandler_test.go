@@ -1,6 +1,8 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"net/http/httptest"
 	"testing"
@@ -44,6 +46,58 @@ func Test_HelloWorldReadById_Input_id_hello_world_Should_Be_hello_world(t *testi
 	expected := `{"description":"hello world","id":"hello world"}`
 
 	readById(responseRecorder, request)
+	response := responseRecorder.Result()
+	actual, _ := ioutil.ReadAll(response.Body)
+
+	if string(actual) != expected {
+		t.Errorf("Should Be %s but it got %s", expected, actual)
+	}
+}
+
+func Test_HelloWorldCreate_Input_value_hello_thailand_Should_Be_Id_hello_thailand_Value_hello_thailand(t *testing.T) {
+	stubCreateFunc := func(string) (map[string]string, error) {
+		return map[string]string{
+			"id":          "สวัสดีประเทศไทย",
+			"description": "สวัสดีประเทศไทย",
+		}, nil
+	}
+	create := GetCreate(stubCreateFunc)
+	url := `/helloworld/add`
+	requestBody := map[string]string{
+		"description": "สวัสดีประเทศไทย",
+	}
+	requestBodyString, _ := json.Marshal(requestBody)
+	request := httptest.NewRequest("POST", url, bytes.NewBuffer(requestBodyString))
+	responseRecorder := httptest.NewRecorder()
+	expected := `{"description":"สวัสดีประเทศไทย","id":"สวัสดีประเทศไทย"}`
+
+	create(responseRecorder, request)
+	response := responseRecorder.Result()
+	actual, _ := ioutil.ReadAll(response.Body)
+
+	if string(actual) != expected {
+		t.Errorf("Should Be %s but it got %s", expected, actual)
+	}
+}
+
+func Test_HelloWorldEdit_Input_Id_hello_world_Description_hello_Bangkok_Should_Be_Id_hello_world_Value_hello_Bangkok(t *testing.T) {
+	stubEditFunc := func(string, string) (map[string]string, error) {
+		return map[string]string{
+			"id":          "hello world",
+			"description": "hello Bangkok",
+		}, nil
+	}
+	edit := GetEdit(stubEditFunc)
+	url := `/helloworld/edit?id=hello%20world`
+	requestBody := map[string]string{
+		"description": "hello Bangkok",
+	}
+	requestBodyString, _ := json.Marshal(requestBody)
+	request := httptest.NewRequest("PUT", url, bytes.NewBuffer(requestBodyString))
+	responseRecorder := httptest.NewRecorder()
+	expected := `{"description":"hello Bangkok","id":"hello world"}`
+
+	edit(responseRecorder, request)
 	response := responseRecorder.Result()
 	actual, _ := ioutil.ReadAll(response.Body)
 
