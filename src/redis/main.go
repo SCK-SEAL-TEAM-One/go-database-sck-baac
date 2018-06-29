@@ -16,6 +16,7 @@ func main() {
 	})
 	defer client.Close()
 	rc := crud.RedisClient{Client: client}
+	http.HandleFunc("/helloworld/readAll", api.GetReadAll(rc.ReadAllKey))
 	http.HandleFunc("/redis/read", api.GetRead(rc.ReadKey))
 
 	http.HandleFunc("/redis/create", api.GetCreate(rc.WriteKey))

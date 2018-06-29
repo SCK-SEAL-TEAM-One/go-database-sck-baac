@@ -25,3 +25,20 @@ func (rc RedisClient) WriteKey(key string, val interface{}) error {
 func (rc RedisClient) DeleteKey(key string) (int64, error) {
 	return rc.Client.Del(key).Result()
 }
+
+func (rc RedisClient) ReadAllKey() ([]map[string]string, error) {
+	list := []map[string]string{}
+	keys, err := rc.Client.Keys("*").Result()
+	if err != nil {
+		return list, err
+	}
+
+	for _, key := range keys {
+		value, _ := rc.ReadKey(key)
+		list = append(list, map[string]string{
+			"id":          key,
+			"description": value,
+		})
+	}
+	return list, nil
+}
