@@ -2,9 +2,11 @@ package handler
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Api struct {
@@ -12,6 +14,18 @@ type Api struct {
 	DBUsername string
 	DBPassword string
 	DBName     string
+}
+
+type Sayhi struct {
+	Id          string `json:"Id"`
+	Description string `json:Description`
+}
+
+func MakeJson(id, description string) Sayhi {
+	return Sayhi{
+		Id:          id,
+		Description: description,
+	}
 }
 
 func (a Api) dbConnection() (db *sql.DB) {
@@ -34,7 +48,13 @@ func (a Api) CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err.Error())
 		}
 		insertForm.Exec(description)
-		w.Write([]byte("Created " + description + " success\n"))
+		getLastID, err := db.Prepare("SELECT LAST_INSERT_ID()")
+		rows, _ := getLastID.Query()
+		defer rows.Close()
+		var lastID uint64
+		rows.Next()
+		rows.Scan(&lastID)
+
 		return
 	}
 	w.Write([]byte("fail"))
@@ -52,7 +72,7 @@ func (a Api) Delete(w http.ResponseWriter, r *http.Request) {
 			panic(err.Error())
 		}
 		deleteForm.Exec(id)
-		w.Write([]byte("Deleted " + id + " success\n"))
+		w.Write([]byte("Deleted success\n"))
 		return
 	}
 	w.Write([]byte("fail"))
@@ -66,14 +86,14 @@ func (a Api) Update(w http.ResponseWriter, r *http.Request) {
 		id := r.FormValue("id")
 		insertForm, err := db.Prepare("UPDATE sayhi SET description=? WHERE id=?")
 		if err != nil {
-			panic(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 		insertForm.Exec(description, id)
-		w.Write([]byte("Updated description :" + description + " id :" + id + " success\n"))
+		createResponse, _ := json.Marshal(MakeJson(id, description))
+		w.Write(createResponse)
 		return
 	}
-	w.Write([]byte("fail"))
-
+	w.WriteHeader(http.StatusInternalServerError)
 }
 
 func (a Api) ReadById(w http.ResponseWriter, r *http.Request) {
