@@ -81,7 +81,7 @@ func Test_HelloWorldCreate_Input_value_hello_thailand_Should_Be_Id_hello_thailan
 }
 
 func Test_HelloWorldEdit_Input_Id_hello_world_Description_hello_Bangkok_Should_Be_Id_hello_world_Value_hello_Bangkok(t *testing.T) {
-	stubEditFunc := func(string) (map[string]string, error) {
+	stubEditFunc := func(string, string) (map[string]string, error) {
 		return map[string]string{
 			"id":          "hello world",
 			"description": "hello Bangkok",
