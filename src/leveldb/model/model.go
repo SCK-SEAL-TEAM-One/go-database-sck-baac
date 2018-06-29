@@ -1,10 +1,10 @@
 package model
 
 type ListSayhi struct {
-	List []Sayhi
+	List []Sayhi `json:"sayhi"`
 }
 
 type Sayhi struct {
-	Id          string
-	Description string
+	Id          int    `json:"id"`
+	Description string `json:"description"`
 }

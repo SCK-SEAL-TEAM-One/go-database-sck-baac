@@ -13,18 +13,18 @@ import (
 // 	DB *leveldb.DB
 // }
 
-func ReadAll(db *leveldb.DB) http.HandlerFunc {
+// func ReadAll(db *leveldb.DB) http.HandlerFunc {
 
-	sayhi := crud.ReadSayhi(db)
+// 	sayhi := crud.ReadSayhiAll(db)
 
-	return func(responseWriter http.ResponseWriter, request *http.Request) {
-		JSONConnectData, _ := json.Marshal(sayhi)
-		responseWriter.Write(JSONConnectData)
-	}
-}
+// 	return func(responseWriter http.ResponseWriter, request *http.Request) {
+// 		JSONConnectData, _ := json.Marshal(sayhi)
+// 		responseWriter.Write(JSONConnectData)
+// 	}
+// }
 
 func Read(db *leveldb.DB) http.HandlerFunc {
-	var sayhi model.Sayhi = crud.ReadSayhi(db)
+	var sayhi model.ListSayhi = crud.ReadSayhi(db)
 
 	return func(responseWriter http.ResponseWriter, request *http.Request) {
 		JSONConnectData, _ := json.Marshal(sayhi)
