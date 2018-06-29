@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -55,8 +54,7 @@ func (a Api) CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
 		var lastID uint64
 		rows.Next()
 		rows.Scan(&lastID)
-		createResponse, _ := json.Marshal(MakeJson(strconv.FormatUint(lastID, 10), description))
-		w.Write(createResponse)
+
 		return
 	}
 	w.Write([]byte("fail"))
@@ -74,7 +72,7 @@ func (a Api) Delete(w http.ResponseWriter, r *http.Request) {
 			panic(err.Error())
 		}
 		deleteForm.Exec(id)
-		w.Write([]byte("Deleted " + id + " success\n"))
+		w.Write([]byte("Deleted success\n"))
 		return
 	}
 	w.Write([]byte("fail"))
@@ -88,14 +86,14 @@ func (a Api) Update(w http.ResponseWriter, r *http.Request) {
 		id := r.FormValue("id")
 		insertForm, err := db.Prepare("UPDATE sayhi SET description=? WHERE id=?")
 		if err != nil {
-			panic(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 		insertForm.Exec(description, id)
-		w.Write([]byte("Updated description :" + description + " id :" + id + " success\n"))
+		createResponse, _ := json.Marshal(MakeJson(id, description))
+		w.Write(createResponse)
 		return
 	}
-	w.Write([]byte("fail"))
-
+	w.WriteHeader(http.StatusInternalServerError)
 }
 
 func (a Api) ReadById(w http.ResponseWriter, r *http.Request) {
