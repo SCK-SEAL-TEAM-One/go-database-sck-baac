@@ -13,11 +13,10 @@ func main() {
 		DBPassword: "sckshuhari",
 		DBName:     "sckseal",
 	}
-	http.HandleFunc("/create", api.CreateMessageHandler)
-	http.HandleFunc("/delete", api.Delete)
-	http.HandleFunc("/update", api.Update)
-	http.HandleFunc("/readbyid", api.ReadById)
-	http.HandleFunc("/read", api.Read)
+	http.HandleFunc("/helloworld/add", api.CreateMessageHandler)
+	http.HandleFunc("/helloworld/delete", api.Delete)
+	http.HandleFunc("/helloworld/edit", api.Update)
+	http.HandleFunc("/helloworld/readById", api.ReadById)
 
 	log.Println("Listening...")
 	http.ListenAndServe(":3000", nil)

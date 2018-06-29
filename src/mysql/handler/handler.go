@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -54,11 +55,11 @@ func (a Api) CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
 		var lastID uint64
 		rows.Next()
 		rows.Scan(&lastID)
-
+		CreateResponse, _ := json.Marshal(MakeJson(strconv.FormatUint(lastID, 10), description))
+		w.Write(CreateResponse)
 		return
 	}
-	w.Write([]byte("fail"))
-
+	w.WriteHeader(http.StatusInternalServerError)
 }
 
 func (a Api) Delete(w http.ResponseWriter, r *http.Request) {
@@ -69,13 +70,13 @@ func (a Api) Delete(w http.ResponseWriter, r *http.Request) {
 		id := r.FormValue("id")
 		deleteForm, err := db.Prepare("DELETE FROM sayhi WHERE id=?")
 		if err != nil {
-			panic(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 		deleteForm.Exec(id)
 		w.Write([]byte("Deleted success\n"))
 		return
 	}
-	w.Write([]byte("fail"))
+	w.WriteHeader(http.StatusInternalServerError)
 }
 
 func (a Api) Update(w http.ResponseWriter, r *http.Request) {
@@ -89,8 +90,8 @@ func (a Api) Update(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		insertForm.Exec(description, id)
-		createResponse, _ := json.Marshal(MakeJson(id, description))
-		w.Write(createResponse)
+		UpdateResponse, _ := json.Marshal(MakeJson(id, description))
+		w.Write(UpdateResponse)
 		return
 	}
 	w.WriteHeader(http.StatusInternalServerError)
@@ -101,39 +102,20 @@ func (a Api) ReadById(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	if r.Method == http.MethodPost {
 		id := r.FormValue("id")
-		deleteForm, err := db.Prepare("SELECT description FROM sayhi WHERE id=?")
+		deleteForm, err := db.Prepare("SELECT id, description FROM sayhi WHERE id=?")
 		if err != nil {
-			panic(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 		rows, _ := deleteForm.Query(id)
-		defer rows.Close()
-		for rows.Next() {
-			var description string
-			rows.Scan(&description)
-			w.Write([]byte(description))
-		}
-		return
-	}
-	w.Write([]byte("fail"))
-}
-
-func (a Api) Read(w http.ResponseWriter, r *http.Request) {
-	db := a.dbConnection()
-	defer db.Close()
-	if r.Method == http.MethodGet {
-		deleteForm, err := db.Prepare("SELECT id, description FROM sayhi")
-		if err != nil {
-			panic(err.Error())
-		}
-		rows, _ := deleteForm.Query()
 		defer rows.Close()
 		for rows.Next() {
 			var id string
 			var description string
 			rows.Scan(&id, &description)
-			w.Write([]byte(id + ":" + description + "\n"))
+			readByIDResponse, _ := json.Marshal(MakeJson(id, description))
+			w.Write(readByIDResponse)
 		}
 		return
 	}
-	w.Write([]byte("fail"))
+	w.WriteHeader(http.StatusInternalServerError)
 }
