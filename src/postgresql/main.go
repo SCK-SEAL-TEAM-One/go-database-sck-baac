@@ -1,46 +1,17 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
+	"net/http"
+	"postgresql/api"
 
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "1234"
-	dbname   = "sckseal"
-)
-
 func main() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-
-	defer db.Close()
-
-	// err = db.Ping()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Println("Successfully connected!")
-	rows, err := db.Query("SELECT * FROM sayhi")
-	//checkErr(err)
-
-	for rows.Next() {
-		var id int
-		var description string
-		err = rows.Scan(&id, &description)
-		//checkErr(err)
-		fmt.Println("id | description")
-		fmt.Printf("%3v | %8v\n", id, description)
-	}
+	http.HandleFunc("/read", api.Read())
+	http.HandleFunc("/readById", api.ReadById())
+	http.HandleFunc("/add", api.Read())
+	http.HandleFunc("/edit", api.Read())
+	http.HandleFunc("/delete", api.Read())
+	http.ListenAndServe(":8080", nil)
 }

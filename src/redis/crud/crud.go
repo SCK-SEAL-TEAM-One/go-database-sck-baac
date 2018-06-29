@@ -60,6 +60,14 @@ func (rc RedisClient) Add(description string) (map[string]string, error) {
 	if err != nil {
 		return output, err
 	}
-
 	return rc.ReadById(description)
+}
+
+func (rc RedisClient) Edit(id string, description string) (map[string]string, error) {
+	output := map[string]string{}
+	err := rc.Client.Set(id, description, 0).Err()
+	if err != nil {
+		return output, err
+	}
+	return rc.ReadById(id)
 }
