@@ -42,3 +42,14 @@ func (rc RedisClient) ReadAllKey() ([]map[string]string, error) {
 	}
 	return list, nil
 }
+
+func (rc RedisClient) ReadById(id string) (map[string]string, error) {
+	output := map[string]string{}
+	value, err := rc.ReadKey(id)
+	if err != nil {
+		return output, err
+	}
+	output["id"] = id
+	output["description"] = value
+	return output, nil
+}
