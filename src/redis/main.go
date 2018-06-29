@@ -20,7 +20,7 @@ func main() {
 	http.HandleFunc("/helloworld/readById", api.GetReadById(rc.ReadById))
 	http.HandleFunc("/redis/read", api.GetRead(rc.ReadKey))
 
-	http.HandleFunc("/redis/create", api.GetCreate(rc.WriteKey))
+	http.HandleFunc("/redis/create", api.GetBreadCreate(rc.WriteKey))
 
 	http.HandleFunc("/redis/delete", api.GetDelete(rc.DeleteKey))
 
