@@ -15,6 +15,7 @@ func main() {
 	}
 	defer db.Close()
 
-	http.HandleFunc("/read", api.Add(db))
+	http.HandleFunc("/add", api.Add(db))
+	http.HandleFunc("/read", api.Read(db))
 	http.ListenAndServe(":3000", nil)
 }
