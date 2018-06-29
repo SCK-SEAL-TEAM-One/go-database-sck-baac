@@ -53,3 +53,13 @@ func (rc RedisClient) ReadById(id string) (map[string]string, error) {
 	output["description"] = value
 	return output, nil
 }
+
+func (rc RedisClient) Add(description string) (map[string]string, error) {
+	output := map[string]string{}
+	err := rc.WriteKey(description, description)
+	if err != nil {
+		return output, err
+	}
+
+	return rc.ReadById(description)
+}
