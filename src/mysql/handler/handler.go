@@ -29,7 +29,7 @@ func MakeJson(id, description string) Sayhi {
 	}
 }
 
-func (a Api) dbConnection() (db *sql.DB) {
+func (a Api) dbConnection() *sql.DB {
 	sqlCommand := fmt.Sprintf("%s:%s@/%s", a.DBUsername, a.DBPassword, a.DBName)
 	db, err := sql.Open(a.DBDriver, sqlCommand)
 	if err != nil {
@@ -46,7 +46,7 @@ func (a Api) CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
 		description := r.FormValue("description")
 		insertForm, err := db.Prepare("INSERT INTO sayhi(description) VALUES(?)")
 		if err != nil {
-			panic(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 		insertForm.Exec(description)
 		getLastID, err := db.Prepare("SELECT LAST_INSERT_ID()")
